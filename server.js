@@ -7,10 +7,10 @@
     var morgan = require('morgan');             // log requests to the console (express4)
     var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
     var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
-
+    var database = require('./config/database');
 
     // configuration =================
-    mongoose.connect('mongodb://dszordan:059317Dsz!@proximus.modulusmongo.net:27017/Iwibus8i')
+    mongoose.connect(database.url);
 
     app.use(express.static(__dirname + '/public'));                 // set the static files location /public/img will be /img for users
     app.use(morgan('dev'));                                         // log every request to the console
@@ -19,69 +19,8 @@
     app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
     app.use(methodOverride());
 
-    //define model =================
-    var Todo = mongoose.model('Todo',{
-		text:String
-    });
-
-    //routse =====================================
-    	//api -----------------------------
-    	//get all todos
-    	app.get('/api/todos', function(req,res){
-    		Todo.find(function(err, todos){
-
-    			//if an error occurs, return that. No more processing will execute
-    			if (err) 
-    				res.send(err);
-
-    			res.json(todos); // return all todos in json
-    		});
-    	});
-
-		//create todo and send back all todos after creation
-		app.post('/api/todos', function(req,res){
-
-			//create a todo, information comes  from AJAX request from angular
-			Todo.create({
-				text : req.body.text,
-				done : false
-			}, function(err, todo){
-				if (err) 
-					res.send(err);
-
-				//after creation, return all todos
-				Todo.find(function(err, todos){
-					if (err) 
-						res.send(err);
-
-					res.json(todos);
-				});
-			});
-		});
-
-		//delete a todo
-		app.delete('/api/todos/:todo_id', function(req, res){
-			Todo.remove({
-				_id : req.params.todo_id
-			},function(err, todo){
-				if(err)
-					res.send(err);
-
-				//return all todos after the list is refreshed.
-				Todo.find(function(err, todos){
-					if (err)
-						res.send(err);
-
-					res.json(todos);
-				});
-			});
-		});
-
-	//application ---------------------------------
-	app.get('*',function(req,res){
-		res.sendfile('./public/index.html'); // load the single view file.
-	});
-
+    require('./app/routes')(app);
+    
     // listen (start app with node server.js) ======================================
     app.listen(8080);
     console.log("App listening on port 8080");
