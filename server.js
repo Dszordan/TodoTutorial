@@ -20,7 +20,7 @@
     app.use(methodOverride());
 
     //define model =================
-    var todo = mongoose.model('Todo',{
+    var Todo = mongoose.model('Todo',{
 		text:String
     });
 
@@ -76,6 +76,11 @@
 				});
 			});
 		});
+
+	//application ---------------------------------
+	app.get('*',function(req,res){
+		res.sendfile('./public/index.html'); // load the single view file.
+	});
 
     // listen (start app with node server.js) ======================================
     app.listen(8080);
