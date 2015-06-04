@@ -1,6 +1,6 @@
 var dszTodo = angular.module('dszTodo', []);
 
-function mainController($score, $http){
+function mainController($scope, $http){
 	$scope.formData = {};
 
 	//when landingo n the page, get all todos and display
